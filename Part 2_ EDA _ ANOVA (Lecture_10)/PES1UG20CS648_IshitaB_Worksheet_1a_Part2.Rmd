@@ -1,0 +1,384 @@
+---
+title: |
+  PES University, Bangalore
+  
+  Established under the Karnataka Act No. 16 of 2013
+subtitle: |
+  **UE20CS312 - Data Analytics**
+
+  **Worksheet 1a - Part 2: EDA with R | ANOVA**
+author:
+- "Ishita Bharadwaj, Dept. of CSE - PES1UG20CS648"
+- "Collaborated with Hita - PES1UG20CS645"  
+ 
+output: 
+  html_document:
+    fig_width: 3
+    fig_height: 3
+urlcolor: blue
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+# Part I. Exploratory Data Analysis with R
+
+```{r load, message=FALSE, results=TRUE}
+library(tidyverse)
+cbc_df <- read_csv('CharlesBookClubDataset.csv')
+head(cbc_df)
+```
+
+## Solutions
+
+### Solution 1
+
+Generate an understanding of the dataset via a summary of its features. Find the count, missing count, minimum, 1st quartile, median, mean, 3rd quartile, max and standard deviation of all relevant columns. Separately, print the total number of missing values in each column. 
+
+Summary stats for all columns.
+```{r prob1}
+summary(cbc_df)
+```
+
+<span style="color: blue;">
+Std. Deviation for 22 numeric columns.
+Notice that col names - M, R, F have missing values. so std dev is NA.
+</span>
+```{r std dev}
+# columns name, ph. no., address, job are non-numeric, so a subset of df is taken for standard deviation (excluding these 4 columns.)
+nums <- unlist(lapply(cbc_df, is.numeric), use.names = FALSE)  
+colnames(cbc_df[ , nums])
+df<-cbc_df[ , nums]
+apply(df,2,sd)
+
+```
+
+<span style="color: blue;">
+Total number of missing values in each column. 
+</span>
+```{r missing prob1}
+colSums(is.na(cbc_df))
+```
+### Solution 2
+
+Replace missing values within the Recency, Frequency, and Monetary features with suitable values. Explain your reasoning behind the method of substitution used. *Hint:* Try plotting the distribution of the values in each feature using the `hist` function. Think about how to best deal with data imputation. Also, plot the distribution of feature values after imputation.
+```{r missing prob2}
+r<-cbc_df[cbc_df$R == 0, ]
+m<-cbc_df[cbc_df$M == 0, ]
+f<-cbc_df[cbc_df$F == 0, ]
+#Monetary
+print(nrow(m))
+#Frequency
+print(nrow(f))
+#Recency
+print(nrow(r))
+
+```
+<span style="color: blue;">
+Histograms
+</span>
+
+```{r histogram R}
+
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+
+hist(cbc_df$R)
+result.mean <-  mean(cbc_df$R,na.rm = TRUE)
+print(result.mean)
+result.median <-  median(cbc_df$R,na.rm = TRUE)
+print(result.median)
+getmode(cbc_df$R)
+
+cbc_df["R"][is.na(cbc_df["R"])] <- result.median
+
+```
+<span style="color: blue;">
+There's very less difference between median and mean.
+We will replace missing values with median(for columns M and R) rather than the mean because it isn't influenced by large values.
+</span>
+```{r histogram M}
+hist(cbc_df$M)
+result.mean <-  mean(cbc_df$M,na.rm = TRUE)
+print(result.mean)
+result.median <-  median(cbc_df$M,na.rm = TRUE)
+print(result.median)
+
+cbc_df["M"][is.na(cbc_df["M"])] <- result.median
+```
+
+<span style="color: blue;">
+Total purchases(F) is highly skewed towards the left.<br/>
+All missing values replaced with mode because most of the values lie between 0 to 2.<br/> The mean isn't an accurate measure to determine the middle value here.
+</span>
+
+```{r hitogram F, message=FALSE, warning=FALSE, results=TRUE}
+hist(cbc_df$F)
+result.mean <-  mean(cbc_df$F,na.rm = TRUE)
+print(result.mean)
+result.median <-  median(cbc_df$F,na.rm = TRUE)
+print(result.median)
+getmode(cbc_df$F)
+
+cbc_df["F"][is.na(cbc_df["F"])] <- getmode(cbc_df$F)
+
+colSums(is.na(cbc_df))
+# All columns missing value have been replaced by the optimal central tendency.
+
+```
+
+
+### Solution 3 
+
+Discretize the continuous values of Monetary, Recency, and Frequency into appropriate bins, and create three new columns `Mcode`, `Rcode` and `Fcode` respectively, for the discretized values. Explicitly mention the number of bins used and explain the choice for the bin size. Print out the summary of the newly created columns. *Hint:* Use the `cut` function to break on preset breakpoints. What are the most optimum breakpoints you can choose? Try to think of a statistical function that provides these breakpoints for optimum binning.
+```{r binning}
+#' bins_fd
+#' @description returns number of bins according to the freedman diaconis rule
+#' @param vec numeric vector
+#' @return number of bins
+bins_fd <- function(vec){ceiling(diff(range(vec))/ (2*IQR(vec)/ length(vec)^(1/3)))}
+```
+```{r}
+cbc_df2<- cbc_df[c("M","R","F")]
+#printing number of bins for M, R, F repectively
+cat("No. of bins for M: ",bins_fd(cbc_df2$M),"\n")
+cat("No. of bins for R: ",bins_fd(cbc_df2$R),"\n")
+cat("No. of bins for F: ",bins_fd(cbc_df2$F),"\n")
+```
+```{r}
+cbc_df2$Mcode <- cut(cbc_df2$M, breaks= bins_fd(cbc_df2$M))
+cbc_df2$Rcode <- cut(cbc_df2$R, breaks= bins_fd(cbc_df2$R))
+cbc_df2$Fcode <- cut(cbc_df2$F, breaks= bins_fd(cbc_df2$F))
+head(cbc_df2)
+```
+
+
+### Solution 4
+
+The marketing team heavily relies on the RFM variables of the recency of last purchase, total number of purchases, and total money spent on purchases to gauge the health of the members of the book club. Increases in either the frequency of purchases or monetary spend and decreases in time since last purchase across the customer base, will intuitively lead to more sales for the business.
+
+#### 4.1 Bar Graphs 
+
+Create and visualize histograms for the discretized Recency, Frequency, Monetary features. Also create one for the `FirstPurch` feature.
+```{r bar graph  F}
+hist(cbc_df$R, breaks = bins_fd(cbc_df2$R)) 
+hist(cbc_df$M, breaks = bins_fd(cbc_df2$M)) 
+hist(cbc_df$F, breaks = bins_fd(cbc_df2$F)) 
+hist(cbc_df$FirstPurch, breaks = bins_fd(cbc_df$FirstPurch)) 
+
+
+```
+#### 4.2 Box Plot 
+
+Transform the `Florence` variable into a categorical feature that can take up the values `True` or `False`. Create and visualize horizontal box plots for the original Recency, Frequence, Monetary and `FirstPurch` features against the `Florence` variable. *Hint:* To transform `Florence`, use the concept of factors in R and set the labels `True` and `False`.
+```{r box plot}
+new <- cbc_df$Florence
+cbc_df$Florence <- as.logical(as.numeric(new))
+cbc_df
+
+boxplot(R ~ Florence, data = cbc_df, xlab = "Recency",
+   ylab = "Florence",horizontal=TRUE)
+
+
+boxplot(F ~ Florence, data = cbc_df, xlab = "Frequence",
+   ylab = "Florence",horizontal=TRUE)
+
+
+
+boxplot(M ~ Florence, data = cbc_df, xlab = "Monetary",
+   ylab = "Florence",horizontal=TRUE)
+
+```
+
+#### 4.3 Density Plot 
+Create and visualize a density plot for Recency, Frequency, Monetary and `FirstPurch` features.
+```{r density plot}
+r<-density(cbc_df$R)
+plot(r,main='Density plot of Recency')
+
+m<-density(cbc_df$M)
+plot(m,main='Density plot of Monetary')
+
+f<-density(cbc_df$F)
+plot(f,main='Density plot of Frequency')
+
+p<-density(cbc_df$FirstPurch)
+plot(p,main='Density plot of FirstPurch')
+```
+
+
+---
+
+# Part II. ANOVA
+
+An Analysis of Variance Test, or ANOVA, can be thought of as a
+generalization of the t-tests for more than 2 groups. The independent
+t-test is used to compare the means of a condition between two groups.
+ANOVA is used when we want to compare the means of a condition between
+more than two groups. ANOVA tests if there is a difference in the mean
+somewhere in the model (testing if there was an overall effect), but it
+does not tell us where the difference is (if there is one). To find
+where the difference is between the groups, we have to conduct post-hoc
+tests.
+
+To perform any tests, we first need to define the null and alternate
+hypothesis:
+
+-   **Null Hypothesis:** There is *no significant difference* among the
+    groups.
+-   **Alternate Hypothesis:** There is a *significant difference* among
+    the groups.
+
+## Solutions
+
+### Solution 1 
+
+```{r anova load, message=FALSE, results=TRUE, warning=FALSE}
+library(ggpubr)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(broom)
+library(car)
+
+data <- read.csv('Ch7Demo2.csv')
+print(head(data))
+
+```
+
+1.  Consider the dataset. Which type of ANOVA can Scully use? (Justify
+    why the particular test)
+2.  What function(s) could have been used by Scully for ANOVA if he
+    uses the R programming language?
+3.  What does the output of this/these functions tell Scully? (Specify
+    hypotheses and what each column in the summary of the output means
+    considering 5% significance)
+
+<span style="color: blue;">
+1. Scully can use one-way ANOVA for Scenario 1. This is because he is studying the impact of different levels (different groups(POI) - Sonny, Fredo, Michael) on a continuous response variable (number of items logged at lockers.</span>
+<span style="color: blue;"><br/>
+He checks whether the response variable follows a normal distribution(chi-square test - for a goodness of fit between observed and expected values), and whether variation within different groups is the same(hypothesis test for equal variance). </span>
+<br/>
+<span style="color: blue;">
+Since Gowri ma'am has suggested to use the Sales~Discount demo data, one-way ANOVA is done on the different levels of discount(A,B,C) on a continous response variable(Sales).<br/>
+2. Functions to use - aov(), summary(), qf() 
+</span>
+```{r one-way anova discount}
+one.way1<-aov(Sales ~ Discount, data=data)
+summary(one.way1)
+
+#f-critical using alpha, df_num, df_denom
+qf(0.05,2,118, lower.tail=FALSE) 
+```
+<span style="color: blue;">
+3. 
+H0 = No variation of Sales on the levels of discount.<br/>
+H1 =  Variation of Sales on the levels of discount.<br/>
+F statistic = 38.36<br/>
+F critical = 3.073<br/>
+p value = 1.55e-13<br/>
+alpha = 0.05<br/>
+Since F statistic >>1, F statistic - F critical >> 1, and p << alpha, we can say there is significant variation in the groups, and so we are more confident of rejecting the null hypothesis H0.
+</span>
+```{r one-way anova location}
+one.way2<-aov(Sales ~ Location, data=data)
+summary(one.way2)
+
+#f-critical using alpha, df_num, df_denom
+qf(0.05,2,118, lower.tail=FALSE) 
+```
+<span style="color: blue;">
+H0 =  No variation of Sales on the different locations.<br/>
+H1 =  Variation of Sales on the different locations.<br/>
+F statistic = 0.265<br/>
+F critical = 3.073<br/>
+p value = .608<br/>
+alpha = 0.05<br/>
+Since F statistic < 1, and p > alpha, we can say there isn't significant variation in the location on sales of a product, and so we cannot reject null hypothesis with confidence. So we fail to reject H0 and therefore accept alternate hypothesis H1.
+</span>
+
+
+### Solution 2 
+
+1.  Consider the data. Which type of ANOVA can Scully use? (Justify
+    why the particular test)
+2.  What function(s) could have been used by Scully for the ANOVA if he
+    uses the R programming language?
+3.  What does the output of this/these functions tell Scully? (Specify
+    hypotheses and what each column in the summary of the output means
+    considering 5% significance)
+4.  Hitchcock thinks that Scully has missed a task which completes the
+    ANOVA test. What should Scully have thought of? *Hint:* 
+    Philosophically, a hypothesis is a proposition made
+    as a basis for reasoning, without any assumption of its truth. 
+
+<span style="color: blue;">
+We will be using Ch7Demo2.csv for ANOVA as the given case isn't probably the best use case for two way ANOVA.</span><br/>
+<span style="color: blue;">
+Using two way ANOVA here as we have different levels of 2 factors(Discount and Location) that may or may not cause variation in response variable (Sales). We want to understand the impact of both factors simultaneously on sales.<br/>
+</span>
+```{r two way anova}
+two.way<-aov(Sales ~ Location*Discount, data=data)
+summary(two.way)
+```
+<span style="color: blue;">
+P value for location 0.5066, so it is not statistically significant(we fail to reject null hypothesis saying locations are impactful on sales of a product) whereas for discounts th ep value is 1.06e-13 which is statistically significant (we reject null hypothesis saying discount rates have influence on sales). The p value for interaction effect is 0.0725 and is not significant at 5% level. That is, only discount is statistically significant at alpha = 0.05.
+</span>
+
+```{r two way plot}
+
+par(mfrow=c(1,1))
+plot(two.way)
+par(mfrow=c(1,1))
+
+```
+<span style="color: blue;">
+The red line representing the mean of the residuals should be horizontal and centered on zero (or on one, in the scale-location plot), meaning that there are no large outliers that would cause bias in the model.</span><br/>
+<span style="color: blue;">
+The normal Q-Q plot plots a regression between the theoretical residuals of a perfectly-homoscedastic model and the actual residuals of your model, so the closer to a slope of 1 this is the better. This Q-Q plot is very close, with only a bit of deviation.
+</span><br/>
+<span style="color: blue;">
+From these diagnostic plots we can say that the model fits the assumption of homoscedasticity.
+</span>
+
+
+### Solution 3 
+
+Hitchcock also wanted to compare the number of items collected for each pair
+of Person of Interest and priority. He decided to follow
+the common practice of doing a **Tukey's HSD** . The [Tukey's
+Honestly-Significant-Difference](https://www.real-statistics.com/one-way-analysis-of-variance-anova/unplanned-comparisons/tukey-hsd/)[TukeyHSD] test lets us see which groups are different from one another.
+
+What insights did Hitchcock gain after doing the Tukey's HSD?
+(The `TukeyHSD` function can be used to do this test and the output of
+this function can be represented graphically using the `plot`
+function.)
+```{r tukey hsd}
+TukeyHSD(two.way, conf.level=.95)
+plot(TukeyHSD(two.way, conf.level=.95), las = 2)
+
+```
+<br/><span style="color: blue;">
+Tukey HSD - Any two treatments that mean having a difference more than honestly significant difference are said to be significantly different, otherwise not.
+</span><br/>
+<span style="color: blue;"> 
+For location, p = 0.506593 (> alpha) means the group levels are not a significant factor towards the sales (there is no significant difference on sales whether it was bought at location A or location B)
+</span><br/>
+<span style="color: blue;">
+For discount, all p values << 0.05, indicating that there is enough evidence to conclude that the group means are not equal. So there is significant difference on sales based on a particular discount value (A,B,C).
+</span><br/>
+<span style="color: blue;">
+For Location:Discount, the combination of Location 1: Discount 1 vs Location 2: Discount 2 is statistically insignificant for these pairs --
+</span><br/>
+
+```R
+          p adj
+B:A-A:A 0.2157916
+A:B-B:A 0.2511868
+B:B-B:A 0.4758459
+B:B-A:B 0.9986826
+B:C-A:B 0.1090063
+B:C-A:C 0.9796187
+```

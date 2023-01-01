@@ -1,0 +1,316 @@
+---
+title: |
+  PES University, Bangalore
+subtitle: "**UE20CS312 - Data Analytics**\n\n**Worksheet 2b : Multiple Linear Regression**\n\nCourse"
+author: 
+  - "Ishita Bharadwaj - PES1UG20CS648"
+  - 'Collaborated with Hita - PES1UG20CS645'
+output:
+  html_document:
+    df_print: paged
+    fig_width: 6
+    fig_height: 6
+  pdf_document: default
+  word_document: default
+urlcolor: blue
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+## Multiple Linear Regression
+
+Multiple Linear Regression (MLR) is a statistical technique that uses
+several explanatory variables to predict the outcome of response
+variable.The goal of MLR is to model **a linear relationship** between
+explanatory(independent) variables and response(dependent) variables.
+
+## Loading the Dataset
+
+After downloading the dataset and ensuring the working directory is
+right , we read the csv into the dataframe.
+
+```{r dataload, message=FALSE, warning=FALSE, results=TRUE}
+library(tidyverse)
+library(corrplot)
+library(ggplot2)
+library(car)
+library(broom)
+library(ggpubr)
+library(dplyr)
+spotify_df <- read_csv('spotify.csv')
+```
+
+## Solution-1  
+
+Check for missing values in the dataset and normalize the dataset.
+```{r prob1}
+# centralise the means or use z score normalisation
+# there are no missing variables.
+colSums(is.na(spotify_df))
+df <- as.data.frame(scale(spotify_df, scale = TRUE, center = TRUE))
+head(df)
+```
+<span style="color: blue;"><b>
+There are no missing values. 
+</b></span>
+
+## Solution-2   
+
+Fit a linear model to predict the *energy* rating using *all* other
+attributes.Get the summary of the model and explain the results in detail.[*Hint*
+: Use the lm() function. [Click
+here](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm)
+To get the documentation of the same.]
+
+```{r prob2}
+# energy is the target variable, and . means all other attributes other than energy.
+full_model <- lm(energy ~ . , data=df)
+summary(full_model)
+
+```
+<span style="color: blue;"><b>`lm` is used to fit linear models.The coefficients of linear model (betas) are non-zero. Each of them  have a non zero value. It means we can say f-statistic for this linear model is fairly good.<br/>
+The null hypothesis is for testing every attribute's significance at 95%<br/>
+H0: The attribute is not statistically significant to the model.<br/>
+H1: The attribute is statistically significant to the model.<br/>
+P value < 0.05 (reject H0)<br/>
+danceability: statistically significant <br/>
+key: not statistically significant<br/>  
+loudness: statistically significant<br/>
+mode: not statistically significant<br/>
+speechiness: not statistically significant<br/>
+acousticness: statistically significant<br/>
+instrumentalness: statistically significant<br/>
+liveness: not statistically significant<br/>
+valence: statistically significant<br/>
+tempo: not statistically significant<br/>
+duration_ms: not statistically significant<br/>
+time signature: not statistically significant<br/>
+<b></span>
+
+<span style="color: blue;"><b>
+Danceability, loudness, mode, acousticness, instrumentalness, valence have a significant influence on the linear model.
+<b></span>
+
+
+
+## Solution-3  
+
+With the help of a correlogram and scatter plots, choose the features you
+think are important and model an MLR. Justify your choice and explain the new findings.
+```{r prob3}
+c <- cor(df)
+corrplot(c, method='number')
+plot(x=df$loudness, y=df$energy,
+     xlab = 'Loudness',
+     ylab = 'Energy',
+     main = 'Energy vs Loudness'
+     )
+
+plot(x=df$acousticness, y=df$energy,
+     xlab = 'Acousticness',
+     ylab = 'Energy',
+     main = 'Energy vs Acousticness'
+     )
+
+plot(x=df$valence, y=df$energy,
+     xlab = 'Valence',
+     ylab = 'Energy',
+     main = 'Energy vs Valence'
+     )
+
+
+new_model <- lm(energy ~ loudness + acousticness, data = df)
+summary(new_model)
+
+```
+<span style="color: blue;"><b>
+Postively Correlated
+Loudness ~ Energy: 0.8<br/>
+Valence ~ Energy: 0.3<br/>
+</b></span>
+
+<span style="color: blue;"><b>
+Negatively Correlated<br/>
+Acousticness ~ Energy: -0.77<br/>
+</b></span>
+
+<span style="color: blue;"><b>
+We think Loudness and Acousticness are  important to form an MLR model, because their hue(extent of their positive/ negative correlation) is high. But, these independant variables are in turn correlated (-0.6) which is not favourable. We can't say why they are correlated (spurious) and that increases unpredictability in the energy. For a small change in loudness, energy(target variable) is significantly impacted(increases).  R square values is the highest (0.758) with Loudness and Acousticness, with F statistic = 300.7 and standard error = 0.4945, whereas only Loudness has R square value = 0.6619, F statistic = 377 and standard error = 0.58. These indicate that Loudness and Acousticness together impact energy.
+</b></span>
+
+
+## Solution-4   
+
+Conduct a partial F-test to determine if the attributes not chosen by
+you in *Problem-3* are significant to predict the energy.What are the
+null and alternate hypotheses? [ *Hint* : Use the anova function between
+models created in *Problem-2* and *Problem-3*]
+
+```{r prob4}
+# energy is the target variable, and . means all other attributes other than energy.
+without_model <- lm(energy ~ danceability + key + mode + speechiness + instrumentalness + liveness + valence + tempo + 
+    duration_ms + time_signature , data=df)
+summary(without_model) 
+
+anova(new_model,without_model)
+var.test(new_model,without_model)
+
+```
+<span style="color: blue;"><b>
+The null hypothesis is that the ratio of the variances of the 2 models(1 which considers the significant attributes and other that does not.) is 1.<br/>
+The alternate hypothesis is that the ratio of the variances of the 2 models is not 1, there is a difference in variance of the 2 models.<br/>
+</b></span>
+
+<span style="color: blue;"><b>
+Since p-value < 2.2e-16 which is less 0.05, null hypothesis is rejected. This is also shown in the ratio of variances which is equal to 0.2881553 (not equal to 1) hence there is significant variance between the two models.
+</b></span>
+
+## Solution-5    
+
+AIC - Akaike Information Criterion is used to compare different models
+and determine the best fit for the data. The best-fit model according to
+AIC is the one that explains greatest amount of variation using the
+fewest number of attributes. Check
+[this](https://www.scribbr.com/statistics/akaike-information-criterion/)
+resource to learn more about AIC.
+
+Build a model based on AIC using Stepwise AIC regression.Elucidate your observations from the new model. ( *Hint* : Use
+an appropriate function in
+[olsrr](https://www.rdocumentation.org/packages/olsrr/versions/0.5.3)
+package.)
+```{r prob5}
+library(olsrr)
+stepwise_model <- lm(energy ~ loudness + acousticness + danceability + valence + instrumentalness + mode + key , data = df)
+summary(stepwise_model)
+
+print("full_model residual plots")
+plot(full_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+ols_plot_resid_hist(full_model)
+
+
+stepwise_model <- lm(energy ~ loudness + acousticness + danceability + valence + instrumentalness + mode + key , data = df)
+print("stepwise_model residual plots")
+plot(stepwise_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+ols_plot_resid_hist(stepwise_model)
+
+
+print("new_model(loudness, acousticness) residual plots")
+plot(new_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+ols_plot_resid_hist(new_model)
+
+print('loudness residual plots')
+loudness_model <- lm(energy ~ loudness , data = df)
+plot(loudness_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+ols_plot_resid_hist(loudness_model)
+```
+<span style="color: blue;"><b>
+For the stepwise model, loudness, acousticness, danceability and valence are most significant from the Signif. codes. (all less than 4.63e-15). R squared value is 0.842 and Residual standard error is 0.4049.<br/>
+Whereas for the reduced model, R-squared value is equal to 0.758, Residual standard error is 0.4945 (again lesser than the above naive MLR model).<br/>
+</b></span>
+<span style="color: blue;"><b>
+Residuals for the full model (with all attributes) are centered around 0 and follow a normal distribution. This is favourable and correct according to our assumptions for MLR. The same is observed from the stepwise model. The reduced model(loudness+acousticness), however, does not project the ideal assumptions for it's residuals.Residuals are centered around 0 but with a flatter curve (more distributed.). The last residual plot is for the loudness model. It's positively skewed, which was expected as the energy vs loudness curve in solution 2 was of polynomial form. This exhibits as non-linear relationship between loudness and energy.
+</b></span>
+
+```{r prob5 part 2}
+library(AICcmodavg)
+
+models <- list(full_model, stepwise_model, loudness_model, new_model)
+
+model.names <- c('full.mod', 'stepwise.mod', 'loudness.mod', 'loudness.acousticness.mod')
+
+aictab(cand.set = models, modnames = model.names)
+```
+
+<span style="color: blue;"><b>
+The best-fit model (least AICc value) is listed first, that is the AIC stepwise model, closely followed by the naive MLR model, and then the loudness_acousticness and lastly loudness model.
+The stepwise model explains greatest amount of variation using the fewest number of attributes(K = 9 attributes). It also has the maximum log of likelihood value, describing how likely the model is, given the data.
+</b></span>
+
+## Solution-6  
+
+Plot the residuals of the models built till now and comment on it
+satisfying the assumptions of MLR.
+```{r prob6}
+print("full_model residual plots")
+plot(full_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+
+
+print("stepwise_model residual plots")
+plot(stepwise_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+
+
+print("new_model(loudness, acousticness) residual plots")
+plot(new_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+
+print('loudness residual plots')
+plot(loudness_model$residuals, pch = 16, col = "red")
+abline(h = 0, lty = 2)
+
+
+```
+
+<span style="color: blue;"><b>
+The full model and stepwise model best satisfy the assumptions of the residuals in MLR model.
+The residuals are independant, and their variance is constant for all values of xi(homoscedasticity). They follow a normal distribution.<br/>
+The loudness and loudness_acousticness model don't ideally conform to the assumptions of the residuals in MLR model. There exists multi collinearity between loudness and acousticness(0.6). Both residual plots are not exactly centered around 0. There is non-uniformity of the residuals about 0 (high absolute residual value).
+</b></span>
+
+## Solution-7  
+For the model built in **_Problem-2_** , determine the presence of multicollinearity using VIF. Determine if there are outliers in the data using [Cook's Distance](https://www.statisticshowto.com/cooks-distance/). If you find any , remove the outliers and fit the model for _Problem-2_ and see if the fit improves. [ _Hint_ : All the relevant functions can be found in _olsrr_ package. An observation can be termed as an outlier if it has a Cook's distance of more than 4/n where n is the number of records.]
+```{r}
+
+cookd <- ols_plot_cooksd_chart(full_model)
+
+ols_vif_tol(full_model)
+
+k<-ols_plot_cooksd_bar(full_model, print_plot = TRUE)
+
+cooksD <- cooks.distance(full_model)
+n <- nrow(df)
+influential <- as.numeric(names(cooksD)[(cooksD > (4/n))])
+new_df <- df[-influential, ]
+nrow(new_df)
+
+new_full_model <- lm(energy ~ . , data=new_df)
+summary(new_full_model)
+
+
+
+```
+
+<span style="color: blue;"><b>
+The VIF score of instrumentalness and danceability is moderate (~3.60).<br/>
+VIF estimates how much the variance of a regression coefficient is inflated due to multicollinearity in the model. Generally, a VIF score between 1 and 5 is moderately correlated.This is not too high and shouldn't be a cause for concern.<br/>
+</b></span>
+
+
+
+<span style="color: blue;"><b>
+There are 14 outliers in the full model.<br/>
+Out of 195 values, 14 are removed, as shown above(the final nrow(new_df) is equal to 181).
+The resulting model is fitted and it's summary statistics observed. This new model with outliers removed fits better than the original one in Solution 2. It has a higher Multiple R-squared value, lesser residual standard error and higher F-statistic; all of which lead us to conclude that this outlier-free model performs better than the with-outlier model.
+</b></span>
+
+<span style="color: blue;"><b>
+Outlier free model.<br/>
+Residual standard error: 0.337 <br/>
+Multiple R-squared:  0.8778<br/>
+F-statistic: 100.6<br/>
+</b></span>
+<br/>
+
+<span style="color: blue;"><b>
+With-outlier model.<br/>
+Residual standard error: 0.4077 <br/>
+Multiple R-squared:  0.844 <br/>
+F-statistic: 82.08 <br/><br/>
+Thank You!</br/>
+</b></span>

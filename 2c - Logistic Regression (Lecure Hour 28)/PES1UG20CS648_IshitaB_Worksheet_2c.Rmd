@@ -1,0 +1,376 @@
+---
+title: |
+  PES University, Bangalore
+  
+  Established under the Karnataka Act No. 16 of 2013
+subtitle: |
+  **UE20CS312 - Data Analytics**
+
+  **Worksheet 2c - Logistic Regression**
+author: 
+  - "Ishita Bharadwaj - PES1UG20CS648"
+  - 'Collaborated with Hita - PES1UG20CS645'
+output: 
+  html_document:
+    fig_width: 6
+    fig_height: 6
+urlcolor: blue
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+### Prerequisites
+
+To download the data required for this worksheet, visit this [Github
+link](https://github.com/Data-Analytics-UE20CS312/Unit-2-Worksheets/tree/main/2c%20-%20Logistic%20Regression).
+Use the following libraries and read the dataset:
+
+```{r import, message=FALSE, warning=FALSE, results=TRUE}
+library(tidyverse)
+library(InformationValue)
+char_preds <- read.csv('got_characters.csv')
+```
+
+# The Logit Model
+
+The linear regression techniques discussed so far are used to model the
+relationship between a quantitative response variable and one or more
+explanatory variables. When the response variable is categorical, other
+techniques are more suited to the task of classification.
+
+The **logit model**, or **logistic model** models the probability, $p$,
+that a dichotomous (binary), dependent variable takes on one of two
+possible outcomes. It achieves this by setting the natural logarithm of
+the odds of the response variable, called the *log-odds* or *logit*, as
+a linear function of the explanatory variables.
+
+$$Z_i = \text{log}\left( \frac{p}{1-p}\right) = \beta_0 + \beta_1x + ... + \beta_nx_n \space \text{ for } \space p \in (0,1)$$
+
+Here, $Z_i$ is the log-odds of the response variable taking on a value
+with probability $p$.
+
+**Logistic regression** is an algorithm that estimates the parameters,
+or coefficients, of the linear combination of the logit model. In this
+worksheet, we will classify a certain binary feature of a dataset using
+logistic regression.
+
+# Solutions
+
+### Solution 1
+
+How many characters from the SoIaF world does this dataset contain
+information on? Calculate the percentage of missing data for each column
+of the dataset and print them out in descending order as a dataframe.
+
+```{r prob1}
+#No. of characters listed in the dataframe
+sprintf("The no. of characters listed in the data = %d", nrow(char_preds))
+
+#Set empty entries to NA
+char_preds[char_preds == "" | char_preds == " "] <- NA
+
+# Make a DF for number of null vals in each column
+df <- data.frame(colSums(is.na(char_preds)) / nrow(char_preds) * 100)
+
+
+# Rename column with an appropriate header
+colnames(df) <- c('% Missing')
+
+# Reset index and make a feature of col names
+df$Columns <- rownames(df)
+rownames(df) <- NULL
+
+# Order in decreasing order of percentages - 
+new_df <- df[order(df$'% Missing', decreasing = TRUE), ]
+rownames(new_df) <- NULL
+new_df
+```
+
+[<b> Data from both missing values in numeric fields and empty strings
+in descriptive fields. All missing placeholders is converted to type NA.
+</b>]{style="color: blue;"}
+
+### Solution 2
+
+#### Step 1
+
+What are the inferences you can draw from the output dataframe of the
+previous problem? How can we handle columns with extremely high
+proportions of missing data before moving on?
+
+*Hint:* Does missing data in a column tell you something about the
+target variable (`actual`)? If not, set a missing percentage threshold
+of 80%, deeming the column as having insufficient data, and drop the
+column.
+
+```{r prob2}
+#What are the inferences you can draw from the output dataframe of 
+#the previous problem? How can we handle columns with extremely 
+#high proportions of missing data before moving on?
+
+
+#If the missing data in a column does not tell you something about the target
+#variable (`actual`) or it is MCAR, set a missing percentage threshold of 80%, 
+#deeming the column as having insufficient data, and drop the column.
+remove <- new_df[new_df$'% Missing' > 80,'Columns']
+char_preds <- char_preds[!names(char_preds) %in% remove]
+
+#Function to compute mode (if you need this for any inputation)
+# Function to calculate mode
+get_mode <- function(x) {
+  mode0 <- names(which.max(table(x)))
+  if(is.numeric(x)) return(as.numeric(mode0))
+  mode0
+}
+
+```
+
+The dataframe with high(\>80%) percentage of missing value are: 98.92086
+mother\
+
+
+[<b> 98.92086 mother  <br/>\
+98.92086 isAliveMother <br/>\
+98.81809 heir <br/> 98.81809 isAliveHeir <br/>\
+98.66393 father <br/>\
+98.66393 isAliveFather <br/>\
+85.81706 spouse <br/> 85.81706 isAliveSpouse <br/>
+</b>]{style="color: blue;"}
+<br/>
+
+[<b> These columns with extremely high proportions of missing data have
+to be understood as to which type of missing data it belongs to. A
+threshold is set(80%), deeming the column data as insufficient if
+missing values are > 80%. <br/>The attributes about the alive status of the
+character's immediate family(That is their mother, father, heir and
+spouse) are missing.<br/> It could be that if we do not know the name of the
+character's mother, there's a high chance we don't know if the mother is
+alive (because we don't know who we're looking for). <br/>In any case, the
+target (whether the character is alive or dead) is not dependant on
+whether their parents, heir or spouse is alive or not. This is MCAR.
+</b>]{style="color: blue;"}
+
+#### Step 2
+
+Impute missing data in the remaining numeric features with a reasonable
+statistic. Make sure you observe the distribution of the data in the
+columns to pick out a reasonable statistic. For categorical variables,
+convert the columns to numeric features. *Hint: Use the `unclass`
+function and impute missing categorical feature values with a `-1`.*
+
+```{r}
+char_categorical <- c('culture','title','house')
+char_preds[, char_categorical] <- lapply(char_preds[, char_categorical], as.factor)
+char_preds[, char_categorical] <- sapply(char_preds[, char_categorical], unclass)
+char_preds$age[is.na(char_preds$age)] <- get_mode(char_preds$age)
+           
+# Replace missing with -1
+char_preds[is.na(char_preds)] = -1
+#summary(char_preds)
+```
+
+### Bonus
+
+After plotting the `age` column, do you notice any discrepancies in the
+graph? What do you think might have given rise to a such a distribution?
+
+```{r bonus}
+
+ggplot(char_preds, aes(x=age)) + geom_bar()  
+summary(char_preds$age)
+drop <- c("age")
+char_preds = char_preds[,!(names(char_preds) %in% drop)]
+```
+
+[<b> From the plot, number of characters with age 100 appear to be
+abnormally high. Age of 100 years, expecially in game of thrones is not
+the most common. <br/>So this abnormally high value might be because the
+actual age of the characters is not known so a default value of 100 is
+entered.<br/> This might not be valid data, and might throw our analysis off.
+</b>]{style="color: blue;"}
+
+```{r corr}
+library(corrplot)
+#remove <- c('culture','title', 'house','name',)
+cc <- subset (char_preds, select = -name)
+#cc <- char_preds[~remove]
+c <- cor(cc)
+corrplot(c, method='number',addCoef.col = 1, number.cex = 0.4, tl.cex = 0.4)
+```
+
+[<b> In the correlation plot, `age` is not strongly correlated with the
+`actual` variable. We also observed the summary statistics of the
+logistic model (included `age` as one of the attributes) and noticed
+that `age` was not significant. Also because `age` has an abnormal value
+and the fact that 77% values are missing, imputing it with any central
+tendency value will again cause 1 value to be extremely high. So we will
+drop the age attribute. </b>]{style="color: blue;"}
+
+### Solution 3
+
+#### Step 1: Check for Class Bias
+
+Ideally, the proportion of both classes of the target variable should be
+the same. Is this so in the case of the target variable in this dataset?
+
+```{r}
+# Original distribution
+print("Actual propotion")
+table(char_preds$actual)
+```
+
+[<b> In all of the data, proportion of both classes is not same. Class 0
+samples: 495 Class 1 samples: 1451 </b>]{style="color: blue;"}
+
+#### Step 2: Create Training and Test Samples
+
+Perform undersampling in case of a class bias in the dataset. Create
+train and test splits.
+
+*Hint: To create the training sample set, sample 70% of the class with
+lesser rows and sample the same number from the other class. Use the
+remaining rows from both classes to create the test split.*
+
+```{r}
+# Create training data
+input_ones <- char_preds[which(char_preds$actual == 1), ]
+input_zeros <- char_preds[which(char_preds$actual == 0), ]  # all 0's
+set.seed(100)  
+
+# Sample from all alive characters
+input_ones_training_rows <- sample(1:nrow(input_ones), 0.7*nrow(input_zeros)) 
+# Sample from all dead characters
+input_zeros_training_rows <- sample(1:nrow(input_zeros), 0.7*nrow(input_zeros))  
+
+training_ones <- input_ones[input_ones_training_rows, ]  
+training_zeros <- input_zeros[input_zeros_training_rows, ]
+
+# Row bind both class dataframes
+trainingData <- rbind(training_ones, training_zeros)
+# Shuffle rows 
+trainingData <- trainingData[sample(1:nrow(trainingData)), ]
+
+
+# Create testing data
+test_ones <- input_ones[-input_ones_training_rows, ]
+test_zeros <- input_zeros[-input_zeros_training_rows, ]
+
+# Row bind both class dataframes
+testData <- rbind(test_ones, test_zeros)
+# Shuffle rows 
+testData <- testData[sample(1:nrow(testData)), ]
+
+#Create testing data for zeros and bind the dataframes as shown in the above lines 
+#testData is the variable that will store the dataframe after binding 
+
+
+#Check the distribution of classes in the splits
+print("Training and Test data propotion")
+table(trainingData$actual)
+table(testData$actual)
+
+```
+
+[<b> Because 70% of 495 for class 0 = 346, since we want to keep our
+class 1 proportion same, so training samples for class 0 = 346. The
+remaining go to test ones(1105) and test zeros(149), making up the
+testData. </b>]{style="color: blue;"} \
+
+### Solution 4
+
+#### Step 1: Build the Logisitic Regression Model
+
+Train a logistic regression model to predict whether a character is dead
+by Book 5 (feature: `actual`) using the training split. Use the
+`summary` function to print the beta coefficients, p values and other
+statistics. Predict characters' deaths on the test split available.
+
+```{r}
+# Build the Logistic Regression model with a list of features... 
+#Select your own list here (perfectly valid to select all features too)
+logitmod <- glm(actual ~ culture + male + book1 + 
+                  isMarried + boolDeadRelations + isPopular + popularity, 
+                family = binomial(link="logit"), data=trainingData)
+
+summary(logitmod)
+
+predicted <- plogis(predict(logitmod, testData))  # predicted scores
+#print(predicted)
+
+```
+
+<span style="color: blue;"><b>The logistic model predicted all the
+test instance characters as dead.<br/> It has an FPR =0.118 (FP = 149 ANF TN=
+1104).<br/>The confusion matrix is printed in the below cells.
+
+</b></span>
+
+### Step 2: Decide on the Optimal Prediction Probability Cutoff
+
+The default cutoff prediction probability score is 0.5 or the ratio of
+1's and 0's in the training data. But sometimes, tuning the probability
+cutoff can improve the accuracy in both the training and test samples.
+Compute the optimal cutoff score (using the test split) that minimizes
+the misclassification error for the trained model.
+
+*Hint: Use a function from the InformationValue library to perform this
+task.*
+
+```{r}
+#The default cut-off, as suggested by Tanish is 0.5
+#What is the optimal cutoff? 
+#You can use the following lines of code for this: 
+library(InformationValue)
+optCutOff <- optimalCutoff(testData$actual, predicted)[1] 
+optCutOff
+```
+
+<span style="color: blue;"><b>
+The optimum cutoff value is 0.051273.
+</b></span>
+
+### Solution 5
+
+Using the optimal cutoff probability, compute and print the following
+using the predictions on the test set:
+
+1.  Misclassification error
+2.  Confusion Matrix
+3.  Sensitivity
+4.  Specificity
+
+Plot the ROC Curve (Receiver Operating Characteristics Curve). What is
+the area under the curve?
+
+*Hint: Use predefined functions for this problem.*
+
+```{r}
+# Build the Logistic Regression model with a list of features... 
+
+logitmod <- glm(actual ~ culture + male + book1 + 
+                  isMarried + boolDeadRelations + isPopular + popularity, 
+                family = binomial(link="logit"), data=trainingData)
+
+summary(logitmod)
+
+predicted <- plogis(predict(logitmod, testData))  # predicted scores
+
+ 
+library(InformationValue)
+optCutOff <- optimalCutoff(testData$actual, predicted)[1] 
+optCutOff
+
+
+misClassError(testData$actual, predicted, threshold = optCutOff)
+sensitivity(testData$actual, predicted, threshold = optCutOff)
+specificity(testData$actual, predicted, threshold = optCutOff)
+confusionMatrix(testData$actual, predicted, threshold = optCutOff)
+
+#Plot the RoC curve and report the AUC
+plotROC(testData$actual, predicted)
+```
+
+<span style="color: blue;"><b>The significant attributes are book culture, male, book1,
+isMarried, boolDeadRelations, isPopular, popularity. The AUROC (Area
+under the curve) value is 0.6648. </b></span>

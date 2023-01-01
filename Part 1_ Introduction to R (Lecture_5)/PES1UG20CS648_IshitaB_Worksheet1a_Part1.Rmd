@@ -1,0 +1,169 @@
+---
+title: |
+  PES University, Bangalore
+  Established under the Karnataka Act No. 16 of 2013
+author:
+- "Ishita Bharadwaj, Dept. of CSE - PES1UG20CS648"
+- "Collaborated with Hita Juneja - PES1UG20CS645"
+subtitle: "**UE20CS312 - Data Analytics**\n\n**Worksheet 1a - Part 1: Exploring Data
+  with R**\n"
+output:
+  html_document:
+    fig_width: 4
+    fig_height: 4
+urlcolor: blue
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# Exploring Data with R
+
+\pagebreak
+```{r}
+# Load CSV
+library(tinytex)
+library(ggplot2)
+data <- read.csv("top_1000_instagrammers.csv", header=TRUE)
+```
+
+
+## Solutions
+
+### Problem 1
+
+Get the summary statistics (mean, median, mode, min, max, 1st quartile, 3rd quartile and standard deviation) for the dataset. Calculate these only for the numerical columns [Audience Country, Authentic Engagement and Engagement Average]. What can you determine from the summary statistics? How does your Instagram stats hold up with the top 1000 :P ?
+
+<span style="color: blue;">Null and 0 values from Audience Country, Engagement Avg. and Authentic Engagement have been removed as they cannot be replaced by any mean value. They are MCAR (Missing Completely At Random), the missing data records are independent of records with complete data.
+</span>
+
+<span style="color: blue;">There's a drastic difference between the median(305,900) and mean (diff= 203,959). In fact, the mean(509,859) tends to be closer in value to the 3rd Quartile, aka the 75th percentile. From the histogram, distribution is positively skewed as a lot of the influencers have a lesser engagement than the mean. Engagement Avg. summary stats are very similar to that of Authentic Engagement.
+</span>
+
+<span style="color: blue;">
+The highest number of influencers are from the United States (mode=US).
+Expectedly, my Instagram stats are nowhere near the top 1000. After all, all my time goes into "authentically engaging" in classes :)
+</span>
+
+
+```{r delete}
+#Removes 0 and NULL values for columns
+#907 records. => 94 removed.
+data=data[data$Authentic.Engagement != 0, ]
+data=data[data$Category != '', ]
+data=data[data$Audience.Country != '', ]
+print(nrow(data))
+```
+
+##### Summary Statistics for Authentic Engagement
+```{r prob1}
+x <- data$Authentic.Engagement
+sum_auth <- summary(x)
+```
+
+```{r calc_mode}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+```
+
+```{r std,warning=FALSE,message=FALSE, results=TRUE}
+std_auth  <- sd(x) * sqrt((length(x)-1)/length(x))
+mode_auth <- getmode(x)
+print(sum_auth)
+print(std_auth)
+print(mode_auth)
+```
+```{r}
+
+ggplot(data, aes(x=Authentic.Engagement)) + geom_histogram()
+```
+
+##### Summary Statistics for Audience Country
+```{r country ,warning=FALSE,message=FALSE, results=TRUE}
+# factoring categorical data to numeric data.
+y<- factor(data$Audience.Country)
+y_new=unclass(y)
+print(y_new)
+```
+
+```{r summary2}
+sum_country<-summary(y_new)
+std_country  <- sd(y_new) * sqrt((length(y_new)-1)/length(y_new))
+mode_country <- getmode(y_new)
+```
+
+```{r print2}
+print(sum_country)
+print(std_country)
+print(mode_country)
+```
+
+##### Summary Statistics for Engagement.Avg.
+```{r engagement}
+z<-data$Engagement.Avg.
+sum_engagement<-summary(z)
+std_engagement  <- sd(z) * sqrt((length(z)-1)/length(z))
+mode_engagement <- getmode(z)
+```
+
+```{r print3}
+print(sum_engagement)
+print(std_engagement)
+print(mode_engagement)
+```
+### Problem 2 
+
+What are the top 3 audience countries that follow most of the top 1000 instagrammers? *Hint:* Go back to bar graph created earlier. Use R to calculate the percentage of the top 1000 instagrammers that have the top 1 audience country.
+
+
+<span style="color: blue;">Top 3 audience countries that follow top 100 Instagrammers are United States, United Kingdom, and United Arab Emirates</span>
+```{r country2}
+a<-data$Audience.Country
+df1<-data.frame(a)
+data_new1 <- unique(df1[order(df1$a, decreasing = TRUE), ])  # Order data descending
+data_new1
+top3 = data_new1[1:3]
+print(top3)
+```
+
+### Problem 3 
+Create a horizontal box plot using the column `Authentic.Engagement`. What inferences can you make from this box and whisker plot?
+
+<span style="color: blue;">Most of data points are clustered left(lower values) of the boxplot.<br/>
+Few records have very high (upto 7,000,000) values, which is why mean is comparatively greater than median.
+Distribution of this column is positively skewed. </span>
+
+```{r boxplot2}
+library(ggplot2) 
+ggplot(data, aes(y=Authentic.Engagement)) + 
+  geom_boxplot() +
+  coord_flip()
+```
+
+### Problem 4 
+Create a histogram where the x-axis contains the Audience Country and y-axis contains the total follower count for accounts with that Audience Country. Which country is associated with the most amount of followers? *Hint:* Recall the concept of `groupby()` in Pandas. Try using the `aggregate()` function in R to achieve the same goal. What is the total for India and what rank does it fall compared to other countries?
+
+<span style="color: blue;">Total follower count for India is 5,619,600,000, and has 2nd largest number(rank) of followers.</span>
+
+
+
+```{r aggregate}
+agr <- aggregate(data$Followers, list(data$Audience.Country), FUN=sum)
+print(agr)
+```
+
+```{r histogram}
+ggplot(agr, aes(x=Group.1, y=x)) + geom_col() +theme(axis.text.x = element_text(angle = 90,vjust = 0.5, hjust=1))+ggtitle("Number of followers in every country") +xlab("Audience Country")+ylab("Followers") 
+```
+
+## Conclusion 
+
+<span style="color: blue;">My Instagram profile has been around for 2 years now. I have 700 followers with an approximate interaction with 200 followers. My account falls under the Lifestyle category. You'll find pictures of family, friends, trips and other fun things I've done on my account profile page.
+Unlike fan accounts, my account is a personal/private one with known followers. Hence, there can hardly be any comparison with top 1000 celebrities/instagrammers.</span> 
+
+<span style="color: blue;">Best way to increase followers and user engagement:
+1. Be part of the Instagram communities that follow top instagrammers/influencers. Most of them are either musicians, sportspersons or actors. It's highly probable I will interact/communicate with accounts that are like-minded or have similar content to the influencers I look up to/am a fan of.</span>
+
+<span style="color: blue;">2. Putting out content that's targeted to be comprehensible/relatable to the mass of the audience countries. They are well represented(US, India, Brazil).</span> 

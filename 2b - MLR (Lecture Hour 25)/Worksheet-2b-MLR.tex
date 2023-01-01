@@ -1,0 +1,329 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={PES University, Bangalore},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{PES University, Bangalore}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{\textbf{UE20CS312 - Data Analytics}
+
+\textbf{Worksheet 2b : Multiple Linear Regression}
+
+Course Anchor : Dr.~Gowri Srinivasa
+
+Prepared by : Nishanth M S -
+\href{mailto:nishanthmsathish.23@gmail.com}{\nolinkurl{nishanthmsathish.23@gmail.com}}}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{multiple-linear-regression}{%
+\subsection{Multiple Linear
+Regression}\label{multiple-linear-regression}}
+
+Multiple Linear Regression (MLR) is a statistical technique that uses
+several explanatory variables to predict the outcome of response
+variable.The goal of MLR is to model \textbf{a linear relationship}
+between explanatory(independent) variables and response(dependent)
+variables.
+
+\hypertarget{data-dictionary}{%
+\subsection{Data Dictionary}\label{data-dictionary}}
+
+The data required for this worksheet can be downloaded
+\href{https://github.com/Data-Analytics-UE20CS312/Unit-2-Worksheets/tree/main/2b\%20-\%20Multi\%20Linear\%20Regression}{from
+this GitHub Link}. The data was obtained from
+\href{https://www.kaggle.com/datasets/bricevergnou/spotify-recommendation}{this}
+dataset from Kaggle. The dataset contains features of songs on Spotify
+collected using Spotify API.The features are as follows :
+
+-\textbf{acousticness} : A confidence measure from 0.0 to 1.0 of whether
+the track is acoustic. 1.0 represents high confidence the track is
+acoustic.
+
+-\textbf{danceability} : Danceability describes how suitable a track is
+for dancing based on a combination of musical elements including tempo,
+rhythm stability, beat strength, and overall regularity. A value of 0.0
+is least danceable and 1.0 is most danceable.
+
+-\textbf{duration\_ms} : The duration of track in milliseconds.
+
+-\textbf{energy} : Energy is a measure from 0.0 to 1.0 and represents a
+perceptual measure of intensity and activity.Perceptual features
+contributing to this attribute include dynamic range, perceived
+loudness, timbre, onset rate, and general entropy.
+
+-\textbf{instrumentalness} : Predicts whether a track contains no
+vocals.The closer the instrumentalness value is to 1.0, the greater
+likelihood the track contains no vocal content. Values above 0.5 are
+intended to represent instrumental tracks, but confidence is higher as
+the value approaches 1.0.
+
+-\textbf{key} : The key the track is in. Integers map to pitches using
+standard Pitch Class notation
+
+-\textbf{liveness} : Detects the presence of an audience in the
+recording. Higher liveness values represent an increased probability
+that the track was performed live. A value above 0.8 provides strong
+likelihood that the track is live.
+
+-\textbf{loudness} : The overall loudness of a track in decibels (dB).
+Loudness values are averaged across the entire track and are useful for
+comparing relative loudness of tracks. Loudness is the quality of a
+sound that is the primary psychological correlate of physical strength
+(amplitude). Values typical range between -60 and 0 db.
+
+-\textbf{mode} : Mode indicates the modality (major or minor) of a
+track, the type of scale from which its melodic content is derived.
+Major is represented by 1 and minor is 0.
+
+-\textbf{speechiness} : Speechiness detects the presence of spoken words
+in a track. The more exclusively speech-like the recording (e.g.~talk
+show, audio book, poetry), the closer to 1.0 the attribute value. Values
+above 0.66 describe tracks that are probably made entirely of spoken
+words. Values between 0.33 and 0.66 describe tracks that may contain
+both music and speech, either in sections or layered, including such
+cases as rap music. Values below 0.33 most likely represent music and
+other non-speech-like tracks.
+
+-\textbf{tempo} : The overall estimated tempo of a track in beats per
+minute (BPM). In musical terminology, tempo is the speed or pace of a
+given piece and derives directly from the average beat duration.
+
+-\textbf{time\_signature} : An estimated overall time signature of a
+track. The time signature (meter) is a notational convention to specify
+how many beats are in each bar (or measure).
+
+-\textbf{valence} : A measure from 0.0 to 1.0 describing the musical
+positiveness conveyed by a track. Tracks with high valence sound more
+positive (e.g.~happy, cheerful, euphoric), while tracks with low valence
+sound more negative (e.g.~sad, depressed, angry).
+
+Throughout the course of this worksheet , our response variable is
+energy. We shall try and apply the concepts learnt in class to predict
+the energy of a song using the other features of a song.
+
+\hypertarget{libraries-used}{%
+\subsection{Libraries used}\label{libraries-used}}
+
+-tidyverse
+
+-corrplot
+
+-olsrr :
+\href{https://www.rdocumentation.org/packages/olsrr/versions/0.5.3}{documentation}
+
+\hypertarget{points}{%
+\subsection{Points}\label{points}}
+
+The problems for this worksheet is for a total of 10 points and the
+weightage is not uniformly distributed.
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Problem 1} : 0.5 points
+\item
+  \emph{Problem 2} : 2 points
+\item
+  \emph{Problem 3} : 2 points
+\item
+  \emph{Problem 4} : 1 point
+\item
+  \emph{Problem 5} : 1.5 points
+\item
+  \emph{Problem 6} : 1 point
+\item
+  \emph{Problem 7} : 2 points
+\end{itemize}
+
+\hypertarget{loading-the-dataset}{%
+\subsection{Loading the Dataset}\label{loading-the-dataset}}
+
+After downloading the dataset and ensuring the working directory is
+right , we read the csv into the dataframe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\NormalTok{spotify\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{\textquotesingle{}spotify.csv\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{problem-1-0.5-points}{%
+\subsection{Problem-1 (0.5 Points)}\label{problem-1-0.5-points}}
+
+Check for missing values in the dataset and normalize the dataset.
+
+\hypertarget{problem-2-2-points}{%
+\subsection{Problem-2 (2 Points)}\label{problem-2-2-points}}
+
+Fit a linear model to predict the \emph{energy} rating using \emph{all}
+other attributes.Get the summary of the model and explain the results in
+detail.{[}\emph{Hint} : Use the lm() function.
+\href{https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm}{Click
+here} To get the documentation of the same.{]}
+
+\hypertarget{problem-3-2-points}{%
+\subsection{Problem-3 (2 points)}\label{problem-3-2-points}}
+
+With the help of a correlogram and scatter plots, choose the features
+you think are important and model an MLR. Justify your choice and
+explain the new findings.
+
+\hypertarget{problem-4-1-point}{%
+\subsection{Problem-4 (1 Point)}\label{problem-4-1-point}}
+
+Conduct a partial F-test to determine if the attributes not chosen by
+you in \emph{Problem-3} are significant to predict the energy.What are
+the null and alternate hypotheses? {[} \emph{Hint} : Use the anova
+function between models created in \emph{Problem-2} and
+\emph{Problem-3}{]}
+
+\hypertarget{problem-5-1.5-points}{%
+\subsection{Problem-5 (1.5 Points)}\label{problem-5-1.5-points}}
+
+AIC - Akaike Information Criterion is used to compare different models
+and determine the best fit for the data. The best-fit model according to
+AIC is the one that explains greatest amount of variation using the
+fewest number of attributes. Check
+\href{https://www.scribbr.com/statistics/akaike-information-criterion/}{this}
+resource to learn more about AIC.
+
+Build a model based on AIC using Stepwise AIC regression.Elucidate your
+observations from the new model. ( \emph{Hint} : Use an appropriate
+function in
+\href{https://www.rdocumentation.org/packages/olsrr/versions/0.5.3}{olsrr}
+package.)
+
+\hypertarget{problem-6-1-point}{%
+\subsection{Problem-6 (1 Point)}\label{problem-6-1-point}}
+
+Plot the residuals of the models built till now and comment on it
+satisfying the assumptions of MLR.
+
+\hypertarget{problem-7-2-points}{%
+\subsection{Problem-7 (2 Points)}\label{problem-7-2-points}}
+
+For the model built in \textbf{\emph{Problem-2}} , determine the
+presence of multicollinearity using VIF. Determine if there are outliers
+in the data using
+\href{https://www.statisticshowto.com/cooks-distance/}{Cook's Distance}.
+If you find any , remove the outliers and fit the model for
+\emph{Problem-2} and see if the fit improves. {[} \emph{Hint} : All the
+relevant functions can be found in \emph{olsrr} package. An observation
+can be termed as an outlier if it has a Cook's distance of more than 4/n
+where n is the number of records.{]}
+
+\end{document}

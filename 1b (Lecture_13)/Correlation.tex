@@ -1,0 +1,322 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={PES University, Bangalore},
+  pdfauthor={UE20CS312 - Data Analytics - Worksheet 1b - Correlation Analysis; Designed by Vibha Masti, Dept. of CSE - vibha@pesu.pes.edu},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{PES University, Bangalore}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Established under Karnataka Act No.~16 of 2013}
+\author{UE20CS312 - Data Analytics - Worksheet 1b - Correlation
+Analysis \and Designed by Vibha Masti, Dept. of CSE -
+\href{mailto:vibha@pesu.pes.edu}{\nolinkurl{vibha@pesu.pes.edu}}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{correlation}{%
+\subsection{Correlation}\label{correlation}}
+
+Correlation is a measure of the strength and direction of relationship
+that exists between two random variables and is measured using
+correlation coefficient. Correlation can assist data scientists to
+choose the variables for model building that is used for solving an
+analytics problem.
+
+There are different types of correlation coefficients, based on the
+nature of the data being compared:
+
+\begin{itemize}
+\tightlist
+\item
+  Between two continuous (interval, ratio) random variables -
+  \emph{Pearson's Product Moment Correlation Coefficient}
+\item
+  Between two ordinal random variables - \emph{Spearman-Rank Correlation
+  Coefficient}
+\item
+  Between a continuous RV and a dichotomous RV - \emph{Point Bi-Serial
+  Correlation Coefficient}
+\item
+  Between two binary random variables - \emph{Phi Coefficient}
+\end{itemize}
+
+\hypertarget{road-accidents}{%
+\subsubsection{Road Accidents}\label{road-accidents}}
+
+India is the world's second-most populous country with a population of
+around 1.2 billion people (as of July 2022). Roads are a very important
+mode of transport in India, spanning over 6.2 million kilometers of
+length, making it the country with the second-largest road network,
+after the United States of America. (Source:
+\href{https://en.wikipedia.org/wiki/Roads_in_India}{Wikipedia}). With
+India trying to modernize its road infrastructure, there is still the
+problem of frequent road accidents.
+
+Road accidents in India is a major cause of death and injury. The NCRB
+(National Crime Records Bureau) of India collects detailed data on
+traffic accidents and collisions annually. Please download the dataset
+from the
+\href{https://github.com/Data-Analytics-UE20CS312/Unit-1-Worksheets/blob/main/1b\%20-\%20Correlation\%20Analysis/road_accidents_india_2016.csv}{GitHub
+repository} that contains road accident data in India from 2016. The
+data was obtained from
+\href{https://www.kaggle.com/datasets/greeshmagirish/road-accidents-in-india-20142017}{this
+kaggle dataset}.
+
+\textbf{Data Dictionary}
+
+\begin{verbatim}
+S. No.: Serial number
+State/ UT: name of state/union terrirory in India
+Fine/Clear - Total Accidents: total accidents per state/UT in Fine/Clear weather conditions
+Fine/Clear - Persons Killed: total fatalities per state/UT in Fine/Clear weather conditions
+Fine/Clear - Persons Injured: total injured people per state/UT in Fine/Clear weather conditions
+Mist/ Foggy - Total Accidents: total accidents per state/UT in Mist/Foggy weather conditions
+Mist/ Foggy - Persons Killed: total fatalities per state/UT in Mist/Foggy weather conditions
+Mist/ Foggy - Persons Injured: total injured people per state/UT in Mist/Foggy weather conditions
+Cloudy - Total Accidents: total accidents per state/UT in Cloudy weather conditions
+Cloudy - Persons Killed: total fatalities per state/UT in Cloudy weather conditions
+Cloudy - Persons Injured: total injured people per state/UT in Cloudy weather conditions
+Rainy - Total Accidents: total accidents per state/UT in Rainy weather conditions
+Rainy - Persons Killed: total fatalities per state/UT in Rainy weather conditions
+Rainy - Persons Injured: total injured people per state/UT in Rainy weather conditions
+Snowfall - Total Accidents: total accidents per state/UT in Snowfall weather conditions
+Snowfall - Persons Killed: total fatalities per state/UT in Snowfall weather conditions
+Snowfall - Persons Injured: total injured people per state/UT in Snowfall weather conditions
+Hail/Sleet - Total Accidents: total accidents per state/UT in Hail/Sleet weather conditions
+Hail/Sleet - Persons Killed: total fatalities per state/UT in Hail/Sleet weather conditions
+Hail/Sleet - Persons Injured: total injured people per state/UT in Hail/Sleet weather conditions
+Dust Storm - Total Accidents: total accidents per state/UT in Dust Storm weather conditions
+Dust Storm - Persons Killed: total fatalities per state/UT in Dust Storm weather conditions
+Dust Storm - Persons Injured: total injured people per state/UT in Dust Storm weather conditions
+Others - Total Accidents: total accidents per state/UT in Other weather conditions
+Others - Persons Killed: total fatalities per state/UT in Other weather conditions
+Others - Persons Injured: total injured people per state/UT in Other weather conditions
+\end{verbatim}
+
+\hypertarget{points}{%
+\subsubsection{Points}\label{points}}
+
+The problems in this worksheet are for a total of 10 points with each
+problem having a different weightage.
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Problem 1}: 2 points
+\item
+  \emph{Problem 2}: 2 points
+\item
+  \emph{Problem 3}: 3 points
+\item
+  \emph{Problem 4}: 1.5 points
+\item
+  \emph{Problem 5}: 1.5 points
+\end{itemize}
+
+\hypertarget{problem-1-2-points}{%
+\subsubsection{Problem 1 (2 points)}\label{problem-1-2-points}}
+
+Find the total number of accidents in each state for the year 2016 and
+display your results. Make sure to display all rows while printing the
+dataframe. Print only the necessary columns. (Hint: use the grep command
+to help filter out column names).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggpubr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{\textquotesingle{}road\_accidents\_india\_2016.csv\textquotesingle{}}\NormalTok{, }\AttributeTok{row.names=}\DecValTok{1}\NormalTok{)}
+\NormalTok{acc\_cols}\OtherTok{\textless{}{-}}\FunctionTok{grep}\NormalTok{(}\StringTok{"Total accidents"}\NormalTok{, }\FunctionTok{colnames}\NormalTok{(df), }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{value=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(acc\_cols)}
+\CommentTok{\#totalAccidents\textless{}{-}data.frame(state..ut=df$State..UT, total\_acc=rowSums(df[ ,c(acc\_cols)], na.rm=TRUE))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{problem-2-2-points}{%
+\subsubsection{Problem 2 (2 points)}\label{problem-2-2-points}}
+
+Find the
+(\(\text{fatality rate} = \dfrac{\text{total number of deaths}}{\text{total number of accidents}}\))
+in each state. Find out if there is a significant linear correlation at
+a significance of \(\alpha=0.05\) between the \emph{fatality rate} of a
+state and the \emph{mist/foggy rate} (fraction of total accidents that
+happen in mist/foggy conditions).
+
+Correlation between two continuous RVs: Pearson's correlation
+coefficient. Pearson's correlation coefficient between two RVs \(x\) and
+\(y\) is given by:
+
+\[
+  \rho = \frac{\text{Covariance}(x, y)}{\sigma_x \sigma_y}
+\]
+
+where \(\sigma\) is the standard deviation of a variable.
+
+Plot the fatality rate against the mist/foggy rate. (Hint: use the
+\texttt{ggscatter} library to plot a scatterplot with the confidence
+interval of the correlation coefficient).
+
+Plot the fatality rate and mist/foggy rate (see
+\href{https://r-graph-gallery.com/13-scatter-plot.html}{this} and
+\href{https://r-graph-gallery.com/6-graph-parameters-reminder.html}{this}
+for R plot customization).
+
+\hypertarget{problem-3-3-points}{%
+\subsubsection{Problem 3 (3 points)}\label{problem-3-3-points}}
+
+Rank the states based on total accidents and total fatalities (give a
+rank of 1 to the state that has the highest value of a property). You
+are free to use any tie-breaking method for assigning ranks.
+
+Find the Spearman-Rank correlation coefficient between the two rank
+columns and determine if there is any statistical significance at a
+significance level of \(\alpha=0.05\). Also test the hypothesis that the
+correlation coefficient is at least \(0.2\).
+
+The t statistic is given by
+
+\[
+t = \dfrac{r_s - \rho_s}{\sqrt{\dfrac{1-r_s^2}{n-2}}}
+\]
+
+Where \(r_s\) is the calculated Spearman-Rank correlation coefficient
+and \(\rho_s\) is the value of the population correlation coefficient
+being tested against.
+
+\hypertarget{problem-4-1.5-points}{%
+\subsubsection{Problem 4 (1.5 points)}\label{problem-4-1.5-points}}
+
+Convert the column \texttt{Hail.Sleet...Total.Accidents} to a binary
+column as follows. If a hail/sleet accident has occurred in a state,
+give that state a value of 1. Otherwise, give it a value of 0. Once
+converted, find out if there is a significant correlation between the
+\texttt{hail\_accident\_occcur} binary column created and the number of
+rainy total accidents for every state.
+
+Calculate the point bi-serial correlation coefficient between the two
+columns. (Hint: it is equivalent to calculating the Pearson correlation
+between a continuous and a dichotomous variable. You could also use the
+\texttt{ltm} package's \texttt{biserial.cor} function).
+
+\hypertarget{problem-5-1.5-points}{%
+\subsubsection{Problem 5 (1.5 points)}\label{problem-5-1.5-points}}
+
+Similar to in Problem 4, create a binary column to represent whether a
+dust storm accident has occurred in a state (1 = occurred, 0 = not
+occurred). Convert the two columns into a contingency table.
+
+Calculate the phi coefficient of the two tables. (Hint: use the
+\texttt{psych} package).
+
+\end{document}
